@@ -1,17 +1,18 @@
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
 class MasterResume(models.Model):
     file = models.FileField(upload_to='resumes/master/')
-    
+
     def __str__(self):
         return "Master Resume"
+
 
 class JobApplication(models.Model):
     company_name = models.CharField(max_length=200)
     position = models.CharField(max_length=200)
     date_applied = models.DateField(default=timezone.now)
+
     STATUS_CHOICES = [
         ('applied', 'Applied'),
         ('interviewing', 'Interviewing'),
@@ -26,16 +27,23 @@ class JobApplication(models.Model):
     notes = models.TextField(blank=True, default="")
     resume_variant = models.CharField(max_length=200, blank=True, default="")  # e.g., "Resume_Google_v1.docx"
 
+    # uploaded tailored resume file
+    tailored_resume = models.FileField(
+        upload_to='resumes/tailored/',
+        blank=True,
+        null=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True) 
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.position} at {self.company_name}"
-    
+
+
 class Communication(models.Model):
     """
-    Communication log for each job application
-    
+    Communication / response log per application
     """
     CHANNEL_CHOICES = [
         ("email", "Email"),
