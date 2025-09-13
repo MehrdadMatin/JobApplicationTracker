@@ -18,7 +18,16 @@ class JobApplication(models.Model):
         ('offered', 'Offer Received'),
         ('rejected', 'Rejected'),
     ]
-    status = models.CharField(max_length=100)
+    status = models.CharField(
+        max_length=100,
+        choices=STATUS_CHOICES,
+        default='applied'
+        )
+    tailored_resume = models.FileField(
+        upload_to='resumes/tailored/',
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return f"{self.position} at {self.company_name}"
