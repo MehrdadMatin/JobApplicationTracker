@@ -2,6 +2,12 @@ from django.db import models
 from django.utils import timezone
 
 # Create your models here.
+class MasterResume(models.Model):
+    file = models.FileField(upload_to='resumes/master/')
+    
+    def __str__(self):
+        return "Master Resume"
+
 class JobApplication(models.Model):
     company_name = models.CharField(max_length=200)
     position = models.CharField(max_length=200)
