@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+    <h1>Job Application Tracker</h1>
+    <div>
+        {% if latest_application_list %}
+            <ul>
+            {% for application in latest_application_list %}
+                <li>{{ application.company_name }} - {{ application.position }} ({{ application.status }})</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No job applications found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
