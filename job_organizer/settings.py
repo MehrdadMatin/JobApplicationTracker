@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'applications',
     'rest_framework',        
     'corsheaders', 
+    'notifications.apps.NotificationsConfig'
 ]
 
 MIDDLEWARE = [
