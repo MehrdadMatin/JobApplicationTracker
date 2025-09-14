@@ -15,13 +15,17 @@ export default function Navbar() {
         backgroundColor: "#333",
         color: "#fff",
         padding: "10px 20px",
+        marginTop: "10px",
+        marginLeft: "10px",
+        marginRight: "10px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+        borderRadius: "30px",
       }}
     >
-      <h2 style={{ margin: 0 }}>Job Tracker</h2>
+      <h2 style={{ margin: 0 }}>AppTrakk</h2>
 
       <div>
         <NavLink

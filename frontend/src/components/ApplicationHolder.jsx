@@ -5,7 +5,7 @@ function ApplicationHolder({ application }) {
   if (!application) return null;
 
   return (
-    <div className="application-box">
+    <div className={`application-box box-${application.status}`}>
       {/* left half positioning */}
       <div className="application-left">
         <h3>{application.position} @ {application.company_name}</h3>

@@ -54,7 +54,7 @@ export default function ApplicationsPage() {
             <option value="rejected">Rejected</option>
             <option value="on_hold">On Hold</option>
           </select>
-          <button className="add" onClick={() => setOpen(true)}>+</button>
+          <button className="add" onClick={() => setOpen(true)}>Add Job +</button>
         </div>
       </div>
 
