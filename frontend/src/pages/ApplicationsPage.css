@@ -22,6 +22,11 @@
     border: none;
     border-radius: 5px;
   }
+  .header button.add:hover {
+    background-color: #1976D2;
+    cursor: pointer;
+  }
+
   
   .header button.filter {
     background-color: #2196F3;
@@ -30,5 +35,10 @@
     border: none;
     border-radius: 5px;
     margin-right: 10px;
+  }
+
+  .header button.filter:hover {
+    background-color: #1976D2;
+    cursor: pointer;
   }
   

@@ -6,12 +6,12 @@ function ApplicationHolder({ application }) {
 
   return (
     <div className="application-box">
-      {/* Left side */}
+      {/* left half positioning */}
       <div className="application-left">
         <h3>{application.position} @ {application.company}</h3>
       </div>
 
-      {/* Right side */}
+      {/* right half positioning*/}
       <div className="application-right">
         <p>Applied: {application.date}</p>
         <p>
