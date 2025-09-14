@@ -71,7 +71,9 @@ function ApplicationsPage() {
           </div>
 
           {/* Add button */}
-          <button className="add" onClick={() => setShowForm(true)}>+</button>
+          <button className="add" onClick={() => setShowForm(true)}>
+            Add Job +
+          </button>
         </div>
       </div>
 
