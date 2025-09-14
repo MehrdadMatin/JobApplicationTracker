@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('applications.urls')),
-    path('notifcations/', include('notifications.urls'))
+    path('', include('notifications.urls'))
 ]
 
 if settings.DEBUG:
