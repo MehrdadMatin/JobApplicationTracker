@@ -63,7 +63,7 @@ export default function ApplicationsPage() {
           <ApplicationForm
             onSubmit={(newApp) => {
               // (optional) POST to backend then refresh; for now just add locally:
-              setApps(prev => [...prev, { id: crypto.randomUUID(), ...newApp }]);
+              setApps(prev => [...prev, { id: Math.random(), ...newApp }]);
               setOpen(false);
             }}
             onClose={() => setOpen(false)}
