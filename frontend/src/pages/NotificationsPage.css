@@ -1,0 +1,22 @@
+.page-container {
+	padding: 20px;
+}
+ul {
+	padding: initial;
+}
+li {
+	background: #EEE;
+	list-style-type: none;
+	padding: 15px;
+	margin-bottom: 10px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+
+	&:hover {
+		background: #999;
+	}
+	> .ts {
+		color: gray;
+		font-size: small;
+	}
+}
