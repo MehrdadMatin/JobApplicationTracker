@@ -54,7 +54,17 @@ function ApplicationForm({ onSubmit, onClose }) {
             </select>
           </div>
           <div> 
+            {/*let user upload file*/}
             <label>Resume</label>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])} // only allow one file
+        />
+
+            <div>
+            
+      </div>
+
           </div> 
           <div>
             <button type="submit">Save</button>
