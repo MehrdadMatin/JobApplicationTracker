@@ -1,13 +1,19 @@
 // src/components/Navbar.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-function Navbar() {
+const base = {
+  color: "#fff",
+  marginRight: "15px",
+  textDecoration: "none",
+};
+
+export default function Navbar() {
   return (
     <nav
       style={{
-        backgroundColor: "#333",         // dark background
-        color: "#fff",                   // white text
+        backgroundColor: "#333",
+        color: "#fff",
         padding: "10px 20px",
         display: "flex",
         justifyContent: "space-between",
@@ -15,32 +21,40 @@ function Navbar() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      {/* App title / logo */}
       <h2 style={{ margin: 0 }}>Job Tracker</h2>
 
-      {/* Navigation links */}
       <div>
-        <Link
-          to="/Resume_Manager"
-          style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}
+        <NavLink
+          to="/resumes"                    // <-- match your route exactly
+          style={({ isActive }) => ({
+            ...base,
+            borderBottom: isActive ? "2px solid #fff" : "none",
+          })}
         >
           Resume Manager
-        </Link>
-        <Link
-          to="/Notifications"
-          style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}
+        </NavLink>
+
+        <NavLink
+          to="/notifications"              // <-- use lowercase, add a route if you want this page
+          style={({ isActive }) => ({
+            ...base,
+            borderBottom: isActive ? "2px solid #fff" : "none",
+          })}
         >
           Notifications
-        </Link>
-        <Link
-            to="/"
-            style={{ color: "#fff", textDecoration: "none" }}
+        </NavLink>
+
+        <NavLink
+          to="/"
+          style={({ isActive }) => ({
+            ...base,
+            marginRight: 0,
+            borderBottom: isActive ? "2px solid #fff" : "none",
+          })}
         >
-            Home
-        </Link>
+          Home
+        </NavLink>
       </div>
     </nav>
   );
 }
-
-export default Navbar;
