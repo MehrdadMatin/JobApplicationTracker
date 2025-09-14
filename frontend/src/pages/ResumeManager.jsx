@@ -416,8 +416,8 @@ const Button = ({ variant = "primary", size = "md", children, disabled, onClick,
 /** Main Component */
 export default function ResumeManager() {
   const [form, setForm] = useState({
-    name: "ASHLYN USER",
-    email: "ashlynbenoy2004@gmail.com",
+    name: "John Doe",
+    email: "firstname.lastname@gmail.com",
     location: "Edmonton",
     phone: "",
     showLocation: true,
