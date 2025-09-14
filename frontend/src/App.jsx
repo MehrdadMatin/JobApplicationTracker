@@ -3,11 +3,8 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ApplicationsPage from "./pages/ApplicationsPage";
 import ResumeManager from "./pages/ResumeManager.jsx";
+import NotificationsPage from "./pages/NotificationsPage";
 import Navbar from "./components/NavBar.jsx";
-
-const NotificationsPage = () => (
-  <div style={{ padding: 16 }}>Notifications coming soon…</div>
-);
 
 export default function App() {
   return (
