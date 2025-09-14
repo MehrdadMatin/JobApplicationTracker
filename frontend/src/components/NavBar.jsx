@@ -13,6 +13,7 @@ function Navbar() {
         justifyContent: "space-between",
         alignItems: "center",
         fontFamily: "Arial, sans-serif",
+        borderRadius: "30px",
       }}
     >
       {/* App title / logo */}
