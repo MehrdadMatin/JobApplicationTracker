@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ApplicationHolder from "../components/ApplicationHolder";
 import ApplicationForm from "../components/ApplicationForm";
 import "./ApplicationsPage.css";
+import ApplicationDetails from "../components/ApplicationDetails";
 
 // mock data
 const applicationsData = [
@@ -18,6 +19,7 @@ function ApplicationsPage() {
   const [filter, setFilter] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
 
   const options = ["All", "Applied", "Interview", "Rejected", "Offer"];
 
@@ -34,6 +36,14 @@ function ApplicationsPage() {
     ]);
     setShowForm(false);
   };
+
+  // viewing an application 
+  const handleViewApplication = (app) => {
+    setSelectedApp(app);
+    setShowForm(false); // just in case add form is open
+};
+
+
 
   return (
     <div className="page-container">
@@ -83,11 +93,27 @@ function ApplicationsPage() {
       onClose={() => setShowForm(false)}
     />
   </div>
-)}
+  
+)   }
+    {/* show the application detalils */} 
+    {selectedApp && (
+      <div className="detailsOverlay" onClick={() => setSelectedApp(selectedApp)}>
+          <ApplicationDetails
+              application={selectedApp}
+              onClose={() => setSelectedApp(null)}
+          />
+      </div>
+     )}
+
 
       {filteredApps.map((app) => (
-        <ApplicationHolder key={app.id} application={app} />
+        <ApplicationHolder
+        key={app.id}
+        application={app}
+        onClick={() => handleViewApplication(app)}
+    />
       ))}
+      
     </div>
   );
 }
