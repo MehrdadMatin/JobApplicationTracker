@@ -1,95 +1,86 @@
-import React, { useState } from "react";
+// frontend/src/pages/ApplicationsPage.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import { listApplications } from "../api";
 import ApplicationHolder from "../components/ApplicationHolder";
 import ApplicationForm from "../components/ApplicationForm";
 import "./ApplicationsPage.css";
 
-// mock data
-const applicationsData = [
-  { id: 1, company_name: "Acme Corp", position: "Software Engineer", status: "Applied", date_applied: "2025-09-13" },
-  { id: 2, company_name: "Globex Inc", position: "Frontend Developer", status: "Interview", date_applied: "2025-09-10" },
-  { id: 3, company_name: "Umbrella Corp", position: "Backend Developer", status: "Rejected", date_applied: "2025-09-05" },
-  { id: 4, company_name: "Acme Corp", position: "Software Engineer", status: "Applied", date_applied: "2025-09-13" },
-  { id: 5, company_name: "Globex Inc", position: "Frontend Developer", status: "Interview", date_applied: "2025-09-10" },
-  { id: 6, company_name: "Umbrella Corp", position: "Backend Developer", status: "Offer", date_applied: "2025-09-05" },
-];
+const LABEL = {
+  applied: "Applied",
+  interviewing: "Interview",
+  offered: "Offer",
+  rejected: "Rejected",
+  on_hold: "On Hold",
+};
 
-function ApplicationsPage() {
-  const [applications, setApplications] = useState(applicationsData);
-  const [filter, setFilter] = useState("All");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+export default function ApplicationsPage() {
+  const [apps, setApps] = useState([]);
+  const [filter, setFilter] = useState("all");
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
 
-  const options = ["All", "Applied", "Interview", "Rejected", "Offer"];
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await listApplications(); // GET /api/applications/
+        setApps(r.data ?? []);
+      } catch (e) {
+        setErr(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  // filter logic
-  const filteredApps = filter === "All"
-    ? applications
-    : applications.filter(app => app.status === filter);
+  const filtered = useMemo(() => {
+    if (filter === "all") return apps;
+    return apps.filter(a => a.status === filter);
+  }, [apps, filter]);
 
-  // creating new application
-  const handleFormSubmit = (newApp) => {
-    setApplications((prev) => [
-      ...prev,
-      { id: prev.length + 1, ...newApp }
-    ]);
-    setShowForm(false);
-  };
+  if (loading) return <div style={{padding:16}}>Loading…</div>;
+  if (err) return <div style={{padding:16,color:'red'}}>Failed: {String(err)}</div>;
 
   return (
     <div className="page-container">
       <div className="header">
         <h1>My Job Applications</h1>
-        <div style={{ display: "inline-flex", gap: "10px" }}>
-          {/* Filter button with dropdown */}
-          <div style={{ position: "relative" }}>
-            <button className="filter" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-              Filter ▾
-            </button>
-            {isDropdownOpen && (
-              <div style={{
-                position: "absolute",
-                top: "100%",
-                left: 0,
-                backgroundColor: "#fff",
-                border: "1px solid #ccc",
-                zIndex: 10
-              }}>
-                {options.map(option => (
-                  <div
-                    key={option}
-                    style={{ padding: "5px 10px", cursor: "pointer" }}
-                    onClick={() => {
-                      setFilter(option);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    {option}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Add button */}
-          <button className="add" onClick={() => setShowForm(true)}>+</button>
+        <div style={{ display: "inline-flex", gap: 10 }}>
+          <select value={filter} onChange={(e)=>setFilter(e.target.value)}>
+            <option value="all">All</option>
+            <option value="applied">Applied</option>
+            <option value="interviewing">Interview</option>
+            <option value="offered">Offer</option>
+            <option value="rejected">Rejected</option>
+            <option value="on_hold">On Hold</option>
+          </select>
+          <button className="add" onClick={() => setOpen(true)}>+</button>
         </div>
       </div>
 
-      {/* Show the form if add is clicked */}
-      {showForm && (
-  <div className="overlay" onClick={() => setShowForm(false)}>
-    <ApplicationForm
-      onSubmit={handleFormSubmit}
-      onClose={() => setShowForm(false)}
-    />
-  </div>
-)}
+      {open && (
+        <div className="overlay" onClick={() => setOpen(false)}>
+          <ApplicationForm
+            onSubmit={(newApp) => {
+              // (optional) POST to backend then refresh; for now just add locally:
+              setApps(prev => [...prev, { id: crypto.randomUUID(), ...newApp }]);
+              setOpen(false);
+            }}
+            onClose={() => setOpen(false)}
+          />
+        </div>
+      )}
 
-      {filteredApps.map((app) => (
-        <ApplicationHolder key={app.id} application={app} />
+      {filtered.map(app => (
+        <ApplicationHolder
+          key={app.id}
+          application={{
+            ...app,
+            // Make labels pretty if your holder expects Title Case
+            status: LABEL[app.status] ?? app.status,
+          }}
+        />
       ))}
     </div>
   );
 }
-
-export default ApplicationsPage;
