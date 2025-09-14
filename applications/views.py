@@ -14,6 +14,7 @@ from .serializers import (
     JobApplicationSerializer,
     CommunicationSerializer,
 )
+from notifications.signals import upcoming_tasks_notification
 
 
 def index(request):
@@ -29,6 +30,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
     Actions:
       POST /api/applications/<id>/set_status/   { "status": "interviewing" }
       POST /api/applications/<id>/followup_in_days/ { "days": 7, "note": "Follow-up email" }
+      POST /api/applications/<id>/update_notes/ { "notes": "these are the new notes" }
     """
     queryset = JobApplication.objects.all().order_by("-date_applied", "-id")
     serializer_class = JobApplicationSerializer
@@ -53,6 +55,10 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             qs = qs.filter(next_action_due__isnull=False, next_action_due__lt=today)
 
         return qs
+    
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        upcoming_tasks_notification.send(sender=JobApplication, reminder_date=serializer.validated_data.get("next_action_due"), task=serializer.validated_data.get("next_action"))
 
     @action(detail=True, methods=["post"])
     def set_status(self, request, pk=None):
@@ -67,7 +73,6 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         return Response(self.get_serializer(app).data)
 
     @action(detail=True, methods=["post"])
-    
     def followup_in_days(self, request, pk=None):
         """
         Set next_action and next_action_due = today + N days.
@@ -83,7 +88,22 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         app.next_action = note
         app.next_action_due = timezone.localdate() + timedelta(days=days)
         app.save()  
+        upcoming_tasks_notification.send(sender=JobApplication, reminder_date=app.next_action_due, task=app.next_action)
         return Response(self.get_serializer(app).data)
+    
+    @action(detail=True, methods=["post"])
+    def update_notes(self, request, pk=None):
+        """
+        Change the notes field for the job application to the new notes passed in the body
+        Body: { "notes": "these are the new notes"}
+        """
+        app = self.get_object()
+        new_notes = request.data.get("notes")
+
+        app.notes = new_notes
+        app.save()
+        return Response(self.get_serializer(app).data)
+
 
 class CommunicationViewSet(viewsets.ModelViewSet):
     """
