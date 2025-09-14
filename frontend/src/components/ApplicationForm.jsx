@@ -53,6 +53,9 @@ function ApplicationForm({ onSubmit, onClose }) {
               <option value="Rejected">Rejected</option>
             </select>
           </div>
+          <div> 
+            <label>Resume</label>
+          </div> 
           <div>
             <button type="submit">Save</button>
             <button type="button" onClick={onClose}>Cancel</button>

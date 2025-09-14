@@ -1,11 +1,11 @@
 import React from "react";
 import "./ApplicationHolder.css";
 
-function ApplicationHolder({ application }) {
+function ApplicationHolder({ application, onClick }) {
   if (!application) return null;
 
   return (
-    <div className="application-box">
+    <div className="application-box" onClick={onClick}>
       {/* left half positioning */}
       <div className="application-left">
         <h3>{application.position} @ {application.company_name}</h3>
