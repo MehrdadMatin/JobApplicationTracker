@@ -1,26 +1,39 @@
 import React, { useState } from "react";
 import ApplicationHolder from "../components/ApplicationHolder";
+import ApplicationForm from "../components/ApplicationForm";
 import "./ApplicationsPage.css";
 
-// mock data - *still gotta connect to backend 
-const applications = [
-  { id: 1, company: "Acme Corp", position: "Software Engineer", status: "Applied", date: "2025-09-13" },
-  { id: 2, company: "Globex Inc", position: "Frontend Developer", status: "Interview", date: "2025-09-10" },
-  { id: 3, company: "Umbrella Corp", position: "Backend Developer", status: "Rejected", date: "2025-09-05" },
-  { id: 4, company: "Acme Corp", position: "Software Engineer", status: "Offer", date: "2025-09-13" },
-  { id: 5, company: "Globex Inc", position: "Frontend Developer", status: "Interview", date: "2025-09-10" },
-  { id: 6, company: "Umbrella Corp", position: "Backend Developer", status: "Rejected", date: "2025-09-05" },
+// mock data
+const applicationsData = [
+  { id: 1, company_name: "Acme Corp", position: "Software Engineer", status: "Applied", date_applied: "2025-09-13" },
+  { id: 2, company_name: "Globex Inc", position: "Frontend Developer", status: "Interview", date_applied: "2025-09-10" },
+  { id: 3, company_name: "Umbrella Corp", position: "Backend Developer", status: "Rejected", date_applied: "2025-09-05" },
+  { id: 4, company_name: "Acme Corp", position: "Software Engineer", status: "Applied", date_applied: "2025-09-13" },
+  { id: 5, company_name: "Globex Inc", position: "Frontend Developer", status: "Interview", date_applied: "2025-09-10" },
+  { id: 6, company_name: "Umbrella Corp", position: "Backend Developer", status: "Offer", date_applied: "2025-09-05" },
 ];
 
 function ApplicationsPage() {
+  const [applications, setApplications] = useState(applicationsData);
   const [filter, setFilter] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
-  // managing filtering logic
+  const options = ["All", "Applied", "Interview", "Rejected", "Offer"];
+
+  // filter logic
   const filteredApps = filter === "All"
     ? applications
     : applications.filter(app => app.status === filter);
-  const options = ["All", "Applied", "Interview", "Rejected", "Offer"];
+
+  // creating new application
+  const handleFormSubmit = (newApp) => {
+    setApplications((prev) => [
+      ...prev,
+      { id: prev.length + 1, ...newApp }
+    ]);
+    setShowForm(false);
+  };
 
   return (
     <div className="page-container">
@@ -56,9 +69,22 @@ function ApplicationsPage() {
               </div>
             )}
           </div>
-          <button className="add">+</button>
+
+          {/* Add button */}
+          <button className="add" onClick={() => setShowForm(true)}>+</button>
         </div>
       </div>
+
+      {/* Show the form if add is clicked */}
+      {showForm && (
+  <div className="overlay" onClick={() => setShowForm(false)}>
+    <ApplicationForm
+      onSubmit={handleFormSubmit}
+      onClose={() => setShowForm(false)}
+    />
+  </div>
+)}
+
       {filteredApps.map((app) => (
         <ApplicationHolder key={app.id} application={app} />
       ))}

@@ -8,12 +8,12 @@ function ApplicationHolder({ application }) {
     <div className="application-box">
       {/* left half positioning */}
       <div className="application-left">
-        <h3>{application.position} @ {application.company}</h3>
+        <h3>{application.position} @ {application.company_name}</h3>
       </div>
 
       {/* right half positioning*/}
       <div className="application-right">
-        <p>Applied: {application.date}</p>
+        <p>Applied: {application.date_applied}</p>
         <p>
           <span className={`status-circle status-${application.status}`}></span>
           {application.status}
