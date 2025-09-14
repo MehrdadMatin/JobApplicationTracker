@@ -16,7 +16,7 @@ function ApplicationsPage() {
         <h1>My Job Applications</h1>
         <div>
           <button className="filter">Filter</button>
-          <button className="add">➕</button>
+          <button className="add">+</button>
         </div>
       </div>
 

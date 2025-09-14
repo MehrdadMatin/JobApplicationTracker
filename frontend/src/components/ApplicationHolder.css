@@ -1,0 +1,39 @@
+.application-box {
+    display: flex;
+    justify-content: space-between; /* left and right sides */
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+    background-color: rgb(239, 233, 233);
+    font-family: Arial, sans-serif;
+  }
+  
+  /* for left side of holder */ 
+  .application-left h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  /* for right side of holder */ 
+  .application-right p {
+    margin: 0;
+    text-align: right;
+  }
+  
+  /* Status circle */
+  .status-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+  
+  .status-Applied { background-color: orange; }
+  .status-Interview { background-color: blue; }
+  .status-Rejected { background-color: red; }
+  

@@ -12,6 +12,7 @@ function Navbar() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       {/* App title / logo */}
@@ -20,16 +21,22 @@ function Navbar() {
       {/* Navigation links */}
       <div>
         <Link
-          to="/"
+          to="/Resume_Manager"
           style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}
         >
           Resume Manager
         </Link>
         <Link
-          to="/about"
-          style={{ color: "#fff", textDecoration: "none" }}
+          to="/Notifications"
+          style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}
         >
           Notifications
+        </Link>
+        <Link
+            to="/"
+            style={{ color: "#fff", textDecoration: "none" }}
+        >
+            Home
         </Link>
       </div>
     </nav>
