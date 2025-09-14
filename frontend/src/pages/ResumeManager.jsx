@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, Trash2, Download, Upload, Briefcase, User, Mail, MapPin, Phone, Star } from "lucide-react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas"
+
 // Mock API functions for demo
 const mockApi = {
   listApplications: async () => ({
@@ -15,353 +14,359 @@ const mockApi = {
   uploadTailoredResumeForApp: async (id, file) => ({ success: true })
 };
 
-const styles = {
-  container: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f1f5f9 0%, #e0f2fe 50%, #e8eaf6 100%)',
-    padding: '24px'
-  },
-  maxWidth: {
-    maxWidth: '1400px',
-    margin: '0 auto'
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '32px'
-  },
-  title: {
-    fontSize: '2.5rem',
-    fontWeight: 'bold',
-    background: 'linear-gradient(135deg, #000000, #000000)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    marginBottom: '8px'
-  },
-  subtitle: {
-    color: '#6b7280',
-    fontSize: '1.125rem'
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: '2fr 3fr',
-    gap: '24px',
-    '@media (max-width: 1024px)': {
-      gridTemplateColumns: '1fr'
-    }
-  },
-  leftPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '24px'
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    border: '1px solid #f3f4f6',
-    overflow: 'hidden'
-  },
-  cardGradient: {
-    background: 'linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%)'
-  },
-  cardHeader: {
-    padding: '16px 24px',
-    borderBottom: '1px solid #f3f4f6',
-    background: 'linear-gradient(135deg, #000000, #000000)',
-    color: 'white'
-  },
-  cardTitle: {
-    fontSize: '1.125rem',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    margin: 0
-  },
-  cardBody: {
-    padding: '24px'
-  },
-  formGroup: {
-    marginBottom: '16px'
-  },
-  label: {
-    display: 'block',
-    fontSize: '0.875rem',
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  input: {
-    width: '100%',
-    padding: '12px 16px',
-    border: '1px solid #d1d5db',
-    borderRadius: '12px',
-    fontSize: '1rem',
-    transition: 'all 0.2s ease',
-    boxSizing: 'border-box'
-  },
-  inputFocus: {
-    outline: 'none',
-    borderColor: '#2563eb',
-    boxShadow: '0 0 0 3px rgba(37, 99, 235, 0.1)'
-  },
-  textarea: {
-    width: '100%',
-    padding: '12px 16px',
-    border: '1px solid #d1d5db',
-    borderRadius: '12px',
-    fontSize: '1rem',
-    resize: 'none',
-    minHeight: '120px',
-    boxSizing: 'border-box'
-  },
-  select: {
-    width: '100%',
-    padding: '12px 16px',
-    border: '1px solid #d1d5db',
-    borderRadius: '12px',
-    fontSize: '1rem',
-    backgroundColor: 'white',
-    boxSizing: 'border-box'
-  },
-  button: {
-    fontWeight: '600',
-    borderRadius: '12px',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    cursor: 'pointer',
-    border: 'none',
-    fontSize: '1rem'
-  },
-  buttonPrimary: {
-    background: 'linear-gradient(135deg, #000000, #000000)',
-    color: 'white',
-    padding: '12px 16px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-  },
-  buttonSecondary: {
-    backgroundColor: '#f3f4f6',
-    color: '#374151',
-    border: '1px solid #d1d5db',
-    padding: '12px 16px'
-  },
-  buttonDanger: {
-    backgroundColor: '#ef4444',
-    color: 'white',
-    padding: '8px 12px'
-  },
-  buttonSuccess: {
-    backgroundColor: '#10b981',
-    color: 'white',
-    padding: '12px 16px'
-  },
-  buttonLarge: {
-    padding: '16px 24px',
-    fontSize: '1.125rem'
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-    cursor: 'not-allowed'
-  },
-  flexRow: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center'
-  },
-  flexCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px'
-  },
-  experienceCard: {
-    padding: '16px',
-    border: '2px dashed #d1d5db',
-    borderRadius: '12px',
-    backgroundColor: '#f9fafb',
-    marginBottom: '16px'
-  },
-  checkboxGroup: {
-    display: 'flex',
-    gap: '16px',
-    alignItems: 'center'
-  },
-  checkbox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '0.875rem'
-  },
-  checkboxInput: {
-    accentColor: '#2563eb',
-    width: '16px',
-    height: '16px'
-  },
-  message: {
-    marginTop: '16px',
-    padding: '12px',
-    borderRadius: '12px',
-    fontSize: '0.875rem',
-    fontWeight: '500'
-  },
-  messageSuccess: {
-    backgroundColor: '#dcfce7',
-    color: '#166534',
-    border: '1px solid #bbf7d0'
-  },
-  messageWarning: {
-    backgroundColor: '#fef3c7',
-    color: '#92400e',
-    border: '1px solid #fde68a'
-  },
-  messageError: {
-    backgroundColor: '#fee2e2',
-    color: '#991b1b',
-    border: '1px solid #fecaca'
-  },
-  spinner: {
-    border: '2px solid transparent',
-    borderTop: '2px solid white',
-    borderRadius: '50%',
-    width: '16px',
-    height: '16px',
-    animation: 'spin 1s linear infinite'
-  },
-  preview: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  previewPage: {
-    backgroundColor: 'white',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    width: '794px',
-    minHeight: '1123px',
-    padding: '48px 56px',
-    transform: 'scale(0.8)',
-    transformOrigin: 'top center',
-    boxSizing: 'border-box'
-  },
-  previewHeader: {
-    textAlign: 'center',
-    borderBottom: '2px solid #2563eb',
-    paddingBottom: '16px',
-    marginBottom: '24px'
-  },
-  previewName: {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: '8px'
-  },
-  previewContact: {
-    color: '#6b7280',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '16px',
-    flexWrap: 'wrap'
-  },
-  section: {
-    marginBottom: '24px'
-  },
-  sectionTitle: {
-    fontSize: '1.125rem',
-    fontWeight: 'bold',
-    color: '#1f2937',
-    borderBottom: '1px solid #d1d5db',
-    paddingBottom: '4px',
-    marginBottom: '12px'
-  },
-  skillTag: {
-    padding: '4px 12px',
-    backgroundColor: '#dbeafe',
-    color: '#1d4ed8',
-    borderRadius: '20px',
-    fontSize: '0.875rem',
-    fontWeight: '500',
-    display: 'inline-block',
-    margin: '4px'
-  },
-  experienceItem: {
-    marginBottom: '24px'
-  },
-  experienceHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '8px'
-  },
-  experienceTitle: {
-    fontSize: '1.125rem',
-    fontWeight: 'bold',
-    color: '#111827'
-  },
-  experienceCompany: {
-    color: '#2563eb',
-    fontWeight: '600'
-  },
-  experienceDate: {
-    fontSize: '0.875rem',
-    color: '#6b7280',
-    fontWeight: '500'
-  },
-  experienceList: {
-    listStyle: 'disc',
-    paddingLeft: '20px',
-    color: '#374151'
-  },
-  experienceListItem: {
-    marginBottom: '4px'
+// Simple, consistent styling similar to ApplicationsPage
+const styles = `
+  .resume-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    min-height: 100vh;
   }
-};
 
-// Add CSS animation for spinner
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  .resume-header {
+    text-align: center;
+    margin-bottom: 30px;
   }
-  
-  @media (max-width: 1024px) {
-    .grid-responsive {
-      grid-template-columns: 1fr !important;
+
+  .resume-header h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 2rem;
+  }
+
+  .resume-header p {
+    color: #666;
+    margin: 0;
+  }
+
+  .resume-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .resume-grid {
+      grid-template-columns: 1fr;
     }
+  }
+
+  .resume-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    padding: 15px 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+  }
+
+  .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    box-sizing: border-box;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .btn:hover {
+    background: #f5f5f5;
+  }
+
+  .btn-primary {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+  }
+
+  .btn-success:hover {
+    background: #1e7e34;
+  }
+
+  .btn-danger {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    padding: 8px 12px;
+  }
+
+  .btn-danger:hover {
+    background: #c82333;
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-block {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .flex-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .experience-item {
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    padding: 15px;
+    background: #fafafa;
+    margin-bottom: 15px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .message.warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .preview-container {
+    display: flex;
+    justify-content: center;
+    background: #eee;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .preview-page {
+    background: white;
+    width: 8.5in;
+    min-height: 11in;
+    padding: 1in;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    transform: scale(0.7);
+    transform-origin: top center;
+  }
+
+  .preview-header {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+
+  .preview-name {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+  }
+
+  .preview-contact {
+    color: #666;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .section {
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
+
+  .skill-tag {
+    display: inline-block;
+    background: #e9ecef;
+    color: #333;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin: 2px;
+  }
+
+  .experience-entry {
+    margin-bottom: 20px;
+  }
+
+  .experience-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .experience-title {
+    font-weight: bold;
+  }
+
+  .experience-company {
+    color: #666;
+  }
+
+  .experience-date {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .experience-list {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .experience-list li {
+    margin-bottom: 4px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 `;
-document.head.appendChild(styleSheet);
 
-/** Enhanced UI Components */
-const Card = ({ title, children, gradient = false }) => (
-  <div style={{...styles.card, ...(gradient ? styles.cardGradient : {})}}>
+// Simple components
+const Card = ({ title, children, icon }) => (
+  <div className="resume-card">
     {title && (
-      <div style={styles.cardHeader}>
-        <h2 style={styles.cardTitle}>
-          {title === "Personal Information" && <User size={20} />}
-          {title === "Professional Summary" && <Star size={20} />}
-          {title === "Skills & Technologies" && <Briefcase size={20} />}
-          {title === "🎯 Tailor to Job Application" && <Star size={20} />}
-          {title === "📄 Resume Preview" && <User size={20} />}
-          {title === "Work Experience" && <Briefcase size={20} />}
-          {title === "Export Actions" && <Download size={20} />}
-          {title}
-        </h2>
+      <div className="card-header">
+        {icon}
+        {title}
       </div>
     )}
-    <div style={styles.cardBody}>
+    <div className="card-body">
       {children}
     </div>
   </div>
 );
 
-const Row = ({ label, children, icon }) => (
-  <div style={styles.formGroup}>
-    <label style={styles.label}>
+const FormGroup = ({ label, children, icon }) => (
+  <div className="form-group">
+    <label>
       {icon}
       {label}
     </label>
@@ -369,51 +374,13 @@ const Row = ({ label, children, icon }) => (
   </div>
 );
 
-const Input = ({ style = {}, onFocus, onBlur, ...props }) => {
-  const [focused, setFocused] = useState(false);
-  
-  return (
-    <input 
-      style={{
-        ...styles.input,
-        ...(focused ? styles.inputFocus : {}),
-        ...style
-      }}
-      onFocus={(e) => {
-        setFocused(true);
-        onFocus?.(e);
-      }}
-      onBlur={(e) => {
-        setFocused(false);
-        onBlur?.(e);
-      }}
-      {...props}
-    />
-  );
-};
+const Section = ({ title, children }) => (
+  <div className="section">
+    <div className="section-title">{title}</div>
+    <div>{children}</div>
+  </div>
+);
 
-const Button = ({ variant = "primary", size = "md", children, disabled, onClick, style = {} }) => {
-  let buttonStyle = { ...styles.button };
-  
-  if (variant === "primary") buttonStyle = { ...buttonStyle, ...styles.buttonPrimary };
-  if (variant === "secondary") buttonStyle = { ...buttonStyle, ...styles.buttonSecondary };
-  if (variant === "danger") buttonStyle = { ...buttonStyle, ...styles.buttonDanger };
-  if (variant === "success") buttonStyle = { ...buttonStyle, ...styles.buttonSuccess };
-  if (size === "lg") buttonStyle = { ...buttonStyle, ...styles.buttonLarge };
-  if (disabled) buttonStyle = { ...buttonStyle, ...styles.buttonDisabled };
-  
-  return (
-    <button 
-      style={{...buttonStyle, ...style}}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
-
-/** Main Component */
 export default function ResumeManager() {
   const [form, setForm] = useState({
     name: "ASHLYN USER",
@@ -473,7 +440,6 @@ export default function ResumeManager() {
     const next = form.skills.filter((_, idx) => idx !== i); update({ skills: next });
   };
 
-
   const addExperience = () => update({
     experience: [...form.experience, { role: "", company: "", dates: "", bullets: [""] }],
   });
@@ -481,7 +447,6 @@ export default function ResumeManager() {
     const next = form.experience.map((e, idx) => idx === i ? { ...e, [field]: v } : e);
     update({ experience: next });
   };
-  
   
   const setExpBullet = (i, bi, v) => {
     const next = form.experience.map((e, idx) => {
@@ -523,10 +488,6 @@ export default function ResumeManager() {
     }
   };
 
-  
-
-  
-
   const prefillForSelectedJob = () => {
     if (!selectedApp) return;
     const jobFocusedSummary = `Motivated professional seeking the ${selectedApp.position} role at ${selectedApp.company_name}. ${form.summary}`;
@@ -534,96 +495,89 @@ export default function ResumeManager() {
     setMsg("Resume tailored for selected job! ✨");
   };
 
-  // Build a PDF blob from the preview
-const makePdfBlob = async () => {
-  const node = previewRef.current;
-  if (!node) throw new Error("Preview not ready");
+  const makePdfBlob = async () => {
+    const node = previewRef.current;
+    if (!node) throw new Error("Preview not ready");
 
-  // Load libs on demand
-  const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-    import("html2canvas"),
-    import("jspdf"),
-  ]);
+    const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
 
-  // Temporarily remove visual scale so it's crisp in the PDF
-  const prevTransform = node.style.transform;
-  node.style.transform = "";
+    const prevTransform = node.style.transform;
+    node.style.transform = "";
 
-  try {
-    const canvas = await html2canvas(node, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-    });
+    try {
+      const canvas = await html2canvas(node, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "pt", "a4");
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "pt", "a4");
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
 
-    const imgW = pageW;
-    const imgH = (canvas.height * imgW) / canvas.width;
+      const imgW = pageW;
+      const imgH = (canvas.height * imgW) / canvas.width;
 
-    let y = 0;
-    pdf.addImage(imgData, "PNG", 0, y, imgW, imgH, undefined, "FAST");
-
-    // Add extra pages if needed
-    let heightLeft = imgH - pageH;
-    while (heightLeft > 0) {
-      y -= pageH;
-      pdf.addPage();
+      let y = 0;
       pdf.addImage(imgData, "PNG", 0, y, imgW, imgH, undefined, "FAST");
-      heightLeft -= pageH;
+
+      let heightLeft = imgH - pageH;
+      while (heightLeft > 0) {
+        y -= pageH;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, y, imgW, imgH, undefined, "FAST");
+        heightLeft -= pageH;
+      }
+
+      return pdf.output("blob");
+    } finally {
+      node.style.transform = prevTransform;
     }
+  };
 
-    return pdf.output("blob");
-  } finally {
-    node.style.transform = prevTransform;
-  }
-};
-
-// Trigger the download
-const downloadPdf = async () => {
-  try {
-    setMsg("");
-    const blob = await makePdfBlob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Resume_${form.name.replace(/\s+/g, "_")}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    setMsg("PDF downloaded ✔");
-  } catch (e) {
-    console.error(e);
-    setMsg("Failed to generate PDF ❌");
-    alert(e.message || String(e));
-  }
-};
-
-
-  
+  const downloadPdf = async () => {
+    try {
+      setMsg("");
+      const blob = await makePdfBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Resume_${form.name.replace(/\s+/g, "_")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMsg("PDF downloaded ✔");
+    } catch (e) {
+      console.error(e);
+      setMsg("Failed to generate PDF ❌");
+      alert(e.message || String(e));
+    }
+  };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.maxWidth}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Resume Manager</h1>
-          <p style={styles.subtitle}>Create and tailor professional resumes for your job applications</p>
+    <>
+      <style>{styles}</style>
+      <div className="resume-container">
+        <div className="resume-header">
+          <h1>Resume Manager</h1>
+          <p>Create and tailor professional resumes for your job applications</p>
         </div>
 
-        <div style={{...styles.grid}} className="grid-responsive">
+        <div className="resume-grid">
           {/* LEFT PANEL - Controls */}
-          <div style={styles.leftPanel}>
+          <div>
             {/* Job Selection */}
-            <Card title="🎯 Tailor to Job Application" gradient>
-              <div style={styles.flexCol}>
+            <Card title="Tailor to Job Application">
+              <div className="flex-col">
                 <select 
                   value={appId} 
                   onChange={(e) => setAppId(e.target.value)}
-                  style={styles.select}
+                  className="form-select"
                 >
                   <option value="">— Select Application —</option>
                   {apps.map(a => (
@@ -632,157 +586,200 @@ const downloadPdf = async () => {
                     </option>
                   ))}
                 </select>
-                <Button 
+                <button 
                   onClick={prefillForSelectedJob} 
                   disabled={!appId}
-                  style={{width: '100%'}}
+                  className="btn btn-primary btn-block"
                 >
                   <Star size={16} />
                   Tailor to Selected Job
-                </Button>
+                </button>
               </div>
             </Card>
 
-            {/* Header Info */}
+            {/* Personal Info */}
             <Card title="Personal Information">
-              <div style={styles.flexCol}>
-                <Row label="Full Name" icon={<User size={16} />}>
-                  <Input value={form.name} onChange={(e)=>update({name: e.target.value})} />
-                </Row>
-                <Row label="Email Address" icon={<Mail size={16} />}>
-                  <Input value={form.email} onChange={(e)=>update({email: e.target.value})} type="email" />
-                </Row>
-                <Row label="Location" icon={<MapPin size={16} />}>
-                  <Input value={form.location} onChange={(e)=>update({location: e.target.value})} />
-                </Row>
-                <Row label="Phone Number" icon={<Phone size={16} />}>
-                  <Input value={form.phone} onChange={(e)=>update({phone: e.target.value})} type="tel" />
-                </Row>
-                <div style={styles.checkboxGroup}>
-                  <label style={styles.checkbox}>
+              <div className="flex-col">
+                <FormGroup label="Full Name">
+                  <input 
+                    value={form.name} 
+                    onChange={(e)=>update({name: e.target.value})} 
+                    className="form-input"
+                  />
+                </FormGroup>
+                <FormGroup label="Email Address">
+                  <input 
+                    value={form.email} 
+                    onChange={(e)=>update({email: e.target.value})} 
+                    type="email" 
+                    className="form-input"
+                  />
+                </FormGroup>
+                <FormGroup label="Location">
+                  <input 
+                    value={form.location} 
+                    onChange={(e)=>update({location: e.target.value})} 
+                    className="form-input"
+                  />
+                </FormGroup>
+                <FormGroup label="Phone Number">
+                  <input 
+                    value={form.phone} 
+                    onChange={(e)=>update({phone: e.target.value})} 
+                    type="tel" 
+                    className="form-input"
+                  />
+                </FormGroup>
+                <div className="checkbox-group">
+                  <label className="checkbox-item">
                     <input 
                       type="checkbox" 
                       checked={form.showLocation} 
                       onChange={(e)=>update({showLocation: e.target.checked})}
-                      style={styles.checkboxInput}
                     />
-                    <span>Show Location</span>
+                    Show Location
                   </label>
-                  <label style={styles.checkbox}>
+                  <label className="checkbox-item">
                     <input 
                       type="checkbox" 
                       checked={form.showPhone} 
                       onChange={(e)=>update({showPhone: e.target.checked})}
-                      style={styles.checkboxInput}
                     />
-                    <span>Show Phone</span>
+                    Show Phone
                   </label>
                 </div>
               </div>
             </Card>
 
-            {/* Professional Summary */}
+            {/* Summary */}
             <Card title="Professional Summary">
               <textarea
                 value={form.summary}
                 onChange={(e)=>update({summary: e.target.value})}
-                style={styles.textarea}
+                className="form-textarea"
                 placeholder="Write a compelling professional summary..."
               />
             </Card>
 
             {/* Skills */}
             <Card title="Skills & Technologies">
-              <div style={styles.flexCol}>
+              <div className="flex-col">
                 {form.skills.map((s, i) => (
-                  <div key={i} style={styles.flexRow}>
-                    <Input 
+                  <div key={i} className="flex-row">
+                    <input 
                       value={s} 
                       onChange={(e)=>setSkill(i, e.target.value)}
+                      className="form-input"
                       style={{flex: 1}}
                       placeholder="Enter skill..."
                     />
-                    <Button 
-                      variant="danger" 
+                    <button 
+                      className="btn btn-danger" 
                       onClick={()=>removeSkill(i)}
                     >
                       <Trash2 size={14} />
-                    </Button>
+                    </button>
                   </div>
                 ))}
-                <Button variant="secondary" onClick={addSkill} style={{width: '100%'}}>
+                <button 
+                  className="btn btn-block" 
+                  onClick={addSkill}
+                >
                   <Plus size={16} />
                   Add Skill
-                </Button>
+                </button>
               </div>
             </Card>
 
             {/* Experience */}
             <Card title="Work Experience">
-              <div style={styles.flexCol}>
+              <div className="flex-col">
                 {form.experience.map((ex, i) => (
-                  <div key={i} style={styles.experienceCard}>
-                    <div style={styles.flexCol}>
-                      <Row label="Job Title">
-                        <Input value={ex.role} onChange={(e)=>setExpField(i, "role", e.target.value)} />
-                      </Row>
-                      <Row label="Company">
-                        <Input value={ex.company} onChange={(e)=>setExpField(i, "company", e.target.value)} />
-                      </Row>
-                      <Row label="Employment Dates">
-                        <Input value={ex.dates} onChange={(e)=>setExpField(i, "dates", e.target.value)} />
-                      </Row>
+                  <div key={i} className="experience-item">
+                    <div className="flex-col">
+                      <FormGroup label="Job Title">
+                        <input 
+                          value={ex.role} 
+                          onChange={(e)=>setExpField(i, "role", e.target.value)} 
+                          className="form-input"
+                        />
+                      </FormGroup>
+                      <FormGroup label="Company">
+                        <input 
+                          value={ex.company} 
+                          onChange={(e)=>setExpField(i, "company", e.target.value)} 
+                          className="form-input"
+                        />
+                      </FormGroup>
+                      <FormGroup label="Employment Dates">
+                        <input 
+                          value={ex.dates} 
+                          onChange={(e)=>setExpField(i, "dates", e.target.value)} 
+                          className="form-input"
+                        />
+                      </FormGroup>
                       <div>
-                        <div style={styles.label}>Key Achievements</div>
+                        <label style={{marginBottom: '10px', display: 'block', fontWeight: '500'}}>
+                          Key Achievements
+                        </label>
                         {ex.bullets.map((b, bi) => (
-                          <div key={bi} style={{...styles.flexRow, marginBottom: '8px'}}>
-                            <Input 
+                          <div key={bi} className="flex-row" style={{marginBottom: '8px'}}>
+                            <input 
                               value={b} 
                               onChange={(e)=>setExpBullet(i, bi, e.target.value)}
+                              className="form-input"
                               style={{flex: 1}}
                               placeholder="Describe your achievement..."
                             />
-                            <Button 
-                              variant="danger"
+                            <button 
+                              className="btn btn-danger"
                               onClick={()=>setExpField(i, "bullets", ex.bullets.filter((_, x)=>x!==bi))}
                             >
                               <Trash2 size={14} />
-                            </Button>
+                            </button>
                           </div>
                         ))}
-                        <div style={styles.flexRow}>
-                          <Button variant="secondary" onClick={()=>addExpBullet(i)}>
+                        <div className="flex-row">
+                          <button 
+                            className="btn" 
+                            onClick={()=>addExpBullet(i)}
+                          >
                             <Plus size={14} />
                             Add Achievement
-                          </Button>
-                          <Button variant="danger" onClick={()=>removeExp(i)}>
+                          </button>
+                          <button 
+                            className="btn btn-danger" 
+                            onClick={()=>removeExp(i)}
+                          >
                             <Trash2 size={14} />
                             Remove Experience
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
                 ))}
-                <Button variant="secondary" onClick={addExperience} style={{width: '100%'}}>
+                <button 
+                  className="btn btn-block" 
+                  onClick={addExperience}
+                >
                   <Plus size={16} />
                   Add Work Experience
-                </Button>
+                </button>
               </div>
             </Card>
 
-            {/* Action Buttons */}
+            {/* Export Actions */}
             <Card title="Export Actions">
-              <div style={styles.flexCol}>
-                <Button 
+              <div className="flex-col">
+                <button 
                   onClick={handleSaveMaster} 
                   disabled={loading}
-                  style={{width: '100%'}}
-                  size="lg"
+                  className="btn btn-primary btn-block"
                 >
                   {loading ? (
                     <>
-                      <div style={styles.spinner}></div>
+                      <div className="spinner"></div>
                       Processing...
                     </>
                   ) : (
@@ -791,17 +788,15 @@ const downloadPdf = async () => {
                       Save Master Resume
                     </>
                   )}
-                </Button>
-                <Button 
+                </button>
+                <button 
                   onClick={handleTailorToJob} 
                   disabled={loading}
-                  variant="success"
-                  style={{width: '100%'}}
-                  size="lg"
+                  className="btn btn-success btn-block"
                 >
                   {loading ? (
                     <>
-                      <div style={styles.spinner}></div>
+                      <div className="spinner"></div>
                       Processing...
                     </>
                   ) : (
@@ -810,22 +805,20 @@ const downloadPdf = async () => {
                       Export & Attach to Job
                     </>
                   )}
-                </Button>
-
-                <Button onClick={downloadPdf} variant="secondary" className="w-full" size="lg">
+                </button>
+                <button 
+                  onClick={downloadPdf} 
+                  className="btn btn-block"
+                >
                   <Download size={16} />
                   Download Preview PDF
-                </Button>
+                </button>
               </div>
               {msg && (
-                <div style={{
-                  ...styles.message,
-                  ...(msg.includes("✅") || msg.includes("✨") 
-                    ? styles.messageSuccess
-                    : msg.includes("⚠️")
-                    ? styles.messageWarning
-                    : styles.messageError)
-                }}>
+                <div className={`message ${
+                  msg.includes("✅") || msg.includes("✨") ? "success" :
+                  msg.includes("⚠️") ? "warning" : "error"
+                }`}>
                   {msg}
                 </div>
               )}
@@ -834,15 +827,15 @@ const downloadPdf = async () => {
 
           {/* RIGHT PANEL - Preview */}
           <div>
-            <Card title="📄 Resume Preview">
-              <div style={styles.preview}>
-                <div ref={previewRef} style={styles.previewPage}>
+            <Card title="Resume Preview">
+              <div className="preview-container">
+                <div ref={previewRef} className="preview-page">
                   {/* Header */}
-                  <div style={styles.previewHeader}>
-                    <div style={styles.previewName}>
+                  <div className="preview-header">
+                    <div className="preview-name">
                       {form.name}
                     </div>
-                    <div style={styles.previewContact}>
+                    <div className="preview-contact">
                       <span>📧 {form.email}</span>
                       {form.showLocation && <span>📍 {form.location}</span>}
                       {form.showPhone && form.phone && <span>📞 {form.phone}</span>}
@@ -851,16 +844,16 @@ const downloadPdf = async () => {
 
                   {/* Skills */}
                   <Section title="SKILLS">
-                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
                       {form.skills.filter(Boolean).map((s, i) => (
-                        <span key={i} style={styles.skillTag}>{s}</span>
+                        <span key={i} className="skill-tag">{s}</span>
                       ))}
                     </div>
                   </Section>
 
                   {/* Summary */}
                   <Section title="PROFESSIONAL SUMMARY">
-                    <div style={{color: '#374151', lineHeight: '1.6', whiteSpace: 'pre-wrap'}}>
+                    <div style={{color: '#333', lineHeight: '1.6', whiteSpace: 'pre-wrap'}}>
                       {form.summary}
                     </div>
                   </Section>
@@ -868,17 +861,17 @@ const downloadPdf = async () => {
                   {/* Experience */}
                   <Section title="EXPERIENCE">
                     {form.experience.map((ex, i) => (
-                      <div key={i} style={styles.experienceItem}>
-                        <div style={styles.experienceHeader}>
+                      <div key={i} className="experience-entry">
+                        <div className="experience-header">
                           <div>
-                            <div style={styles.experienceTitle}>{ex.role}</div>
-                            <div style={styles.experienceCompany}>{ex.company}</div>
+                            <div className="experience-title">{ex.role}</div>
+                            <div className="experience-company">{ex.company}</div>
                           </div>
-                          <div style={styles.experienceDate}>{ex.dates}</div>
+                          <div className="experience-date">{ex.dates}</div>
                         </div>
-                        <ul style={styles.experienceList}>
+                        <ul className="experience-list">
                           {ex.bullets.filter(Boolean).map((b, bi) => (
-                            <li key={bi} style={styles.experienceListItem}>{b}</li>
+                            <li key={bi}>{b}</li>
                           ))}
                         </ul>
                       </div>
@@ -891,10 +884,10 @@ const downloadPdf = async () => {
                       <div key={i} style={{marginBottom: '12px'}}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                           <div>
-                            <div style={{fontWeight: 'bold', color: '#111827'}}>{ed.school}</div>
-                            <div style={{color: '#374151'}}>{ed.credential}</div>
+                            <div style={{fontWeight: 'bold', color: '#333'}}>{ed.school}</div>
+                            <div style={{color: '#666'}}>{ed.credential}</div>
                           </div>
-                          <div style={styles.experienceDate}>{ed.dates}</div>
+                          <div className="experience-date">{ed.dates}</div>
                         </div>
                       </div>
                     ))}
@@ -905,15 +898,6 @@ const downloadPdf = async () => {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Section({ title, children }) {
-  return (
-    <div style={styles.section}>
-      <div style={styles.sectionTitle}>{title}</div>
-      <div>{children}</div>
-    </div>
+    </>
   );
 }
