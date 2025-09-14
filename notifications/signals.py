@@ -9,16 +9,16 @@ upcoming_tasks_notification = Signal(["reminder_date", "task"])
 
 
 @receiver(post_save, sender=JobApplication)
-def job_application_saved(sender, created, **kwargs):
+def job_application_saved(sender, created, instance, **kwargs):
     """
     Callback function that will be called any time the JobApplication model is saved,
     behaviour will differ depending on whether the model is created or updated
     """
     if created:
-        n = Notification(message="Job application has been created")
+        n = Notification(message=f"Job application has been created for {instance.position} position at {instance.company_name}")
         n.save()
     else: 
-        n = Notification(message="Job application has been updated")
+        n = Notification(message=f"Job application has been updated for {instance.position} position at {instance.company_name}")
         n.save()
 
 @receiver(upcoming_tasks_notification)
